@@ -33,7 +33,7 @@ class MyLogin(QtGui.QMainWindow):
             self.ui.lineEdit.setText('')
             self.ui.lineEdit_2.setText('')
         if check:
-            MyMainW(self).show()
+            MyMainW(MyLogin.DB,self).show()
             self.hide()
             
     

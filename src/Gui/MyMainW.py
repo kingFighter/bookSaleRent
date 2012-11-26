@@ -10,8 +10,9 @@ from MainWindow import Ui_MainWindow
 from dbOperate.DbManager import DbManager
 import time
 class MyMainW(QtGui.QMainWindow):
-   
-    def __init__(self, parent=None):
+    DB = None
+    def __init__(self, db,parent=None):
+        MyMainW.DB=db
         QtGui.QMainWindow.__init__(self,parent)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -21,7 +22,7 @@ class MyMainW(QtGui.QMainWindow):
         QtCore.QObject.connect(self.ui.action_2,QtCore.SIGNAL("triggered()"),self.openBookInfo)
     
     def openBookInfo(self):
-        MyBookInfo(self).show()
+        MyBookInfo(self,MyMainW.DB).show()
         
         
     

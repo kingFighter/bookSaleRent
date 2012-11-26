@@ -6,6 +6,22 @@ import sys
 from dbHelp.StatusManager import StatusManager
 
 class BookManager:
+    def addBook(self,bookIden, supplierIden,
+            bookName, bookType, year, author, retailPrice, rentPrice, originalPrice, amount):
+        sql = "INSERT INTO book  VALUES(\'%s\',\'%s\',\'%s\',\'%s\',\'%s\',\'%s\',%s,%s,%s,%s,%s,%s,%s)" % (bookIden,supplierIden,bookName,bookType,
+                                                                                                     year,author,retailPrice,rentPrice,
+                                                                                                 originalPrice,amount,0);
+        try:
+            cur=DbManager.con.cursor()
+            
+            cur.execute(sql)
+            DbManager.con.commit()
+            print("addBook Successful!")
+        except mdb.Error as e:
+            print("Error %d: %s" % (e.args[0],e.args[1]))
+            #sys.exit(1)
+
+    
     def getBookInfo(self,method,key,searchType):
         idenType=None
         if method == 0:
@@ -41,7 +57,13 @@ class BookManager:
         return result
         
     def vagueBookSearch(self,key):
-        v=None
+        v=[]
+#        for i in range(6):
+#            temp = self.getBookInfo(0, key, False)
+#            if len(temp)>0:
+#                v+=temp 
+        v=self.getBookInfo(2, key, False)
+        return v
         
         
 class UserManager:
@@ -78,9 +100,14 @@ class DbManager:
     db = 'DB'
     con = None
     um = UserManager() 
+    bm = BookManager()
     @staticmethod
     def getUserManager():
         return DbManager.um
+    @staticmethod
+    def getBookManager():
+        return DbManager.bm
+    
     def __init__(self):
         self.connect()
     def connect(self):
