@@ -7,7 +7,8 @@ import sys
 from PyQt4 import QtCore, QtGui
 from Login import Ui_Login
 from dbOperate.DbManager import DbManager
-from Gui.MyMainW import MyMainW 
+from Gui.MyMainW import MyMainW
+from Gui.MyOMainW import MyOMainW 
 
 class MyLogin(QtGui.QMainWindow):
     DB=DbManager()
@@ -33,10 +34,13 @@ class MyLogin(QtGui.QMainWindow):
             self.ui.lineEdit.setText('')
             self.ui.lineEdit_2.setText('')
         if check:
-            MyMainW(MyLogin.DB,self).show()
+            if self.getUserType()[0]=='a':
+                MyMainW(MyLogin.DB,self).show()
+            elif self.getUserType()[0]=='o':
+                MyOMainW(MyLogin.DB,self).show()
+            else:
+                pass
             self.hide()
-            
-    
 
 
 

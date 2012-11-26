@@ -83,6 +83,22 @@ class SupplierManager:
     
 class BookManager:
     
+    def showStock(self):
+        sql = "SELECT * FROM book WHERE amount<=5 AND state=0";
+        cur = DbManager.con.cursor()
+        cur.execute(sql)
+        data = cur.fetchall()
+        DbManager.con.commit()
+        if data == None:
+            return []
+        result = []
+        for i in data:
+            result.append(i)
+        return result
+        
+    
+        
+    
     def delBook(self,bookId):
         sql = "UPDATE book SET state=1 WHERE bookIdentifier='%s'" % bookId ;
         cur = DbManager.con.cursor()

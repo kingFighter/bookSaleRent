@@ -11,7 +11,7 @@ from dbOperate.DbManager import DbManager
 
 class MyBookInfo(QtGui.QMainWindow):
     DB=None
-    def __init__(self, db,parent=None):
+    def __init__(self, db,parent=None,judge=True):
         MyBookInfo.DB=db
         QtGui.QWidget.__init__(self,parent)
         self.ui = Ui_Form()
@@ -19,7 +19,14 @@ class MyBookInfo(QtGui.QMainWindow):
         QtCore.QObject.connect(self.ui.pushButton_4,QtCore.SIGNAL("clicked()"),self.vagueBookSearch)
         QtCore.QObject.connect(self.ui.pushButton ,QtCore.SIGNAL("clicked()"),self.addBook)
         QtCore.QObject.connect(self.ui.pushButton_2 ,QtCore.SIGNAL("clicked()"),self.delBook)
-    
+        
+        self.ui.pushButton_3.close()
+        if not judge:
+            self.ui.pushButton.close()
+            self.ui.pushButton_2.close()
+            self.ui.pushButton_3.close()
+        
+        
     def getSelect(self):
         row = self.ui.tableWidget.currentRow()
         result=[]
