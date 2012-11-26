@@ -5,21 +5,109 @@ import MySQLdb as mdb
 import sys
 from dbHelp.StatusManager import StatusManager
 
+
+class   CusManager:
+    def delCus(self,cusId):
+        sql = "UPDATE customer SET state=1 WHERE cusIdentifier='%s'" % cusId ;
+        cur = DbManager.con.cursor()
+        cur.execute(sql)
+        DbManager.con.commit()
+        return True
+    
+    def addCus(self,cusIden, vipIden,
+            cusName, cusSex, phone, email, type):
+        sql = "INSERT INTO customer  VALUES('%s','%s','%s',%s,'%s','%s',%s,0)" % (cusIden,vipIden,cusName,cusSex,
+                                                                                                     phone,email,type)
+                                                                                                 
+        print(sql)
+        try:
+            cur=DbManager.con.cursor()
+            cur.execute(sql)
+            DbManager.con.commit()
+            print("addCus Successful!")
+            return True
+        except mdb.Error as e:
+            print("Error %d: %s" % (e.args[0],e.args[1]))
+            #sys.exit(1)
+            return False
+        
+    def vagueCusSearch(self,key):
+        sql = "SELECT * FROM customer WHERE cusName LIKE '%"+key+"%'"+" AND state=0";
+        cur = DbManager.con.cursor()
+        cur.execute(sql)
+        data = cur.fetchall()
+        DbManager.con.commit()
+        if data == None:
+            return []
+        result = []
+        for i in data:
+            result.append(i)
+        return result
+
+class SupplierManager:
+    def vagueSupplierSearch(self,key):
+        
+        sql = "SELECT * FROM supplier WHERE supplierName LIKE '%"+key+"%'"+" AND state=0";
+        cur = DbManager.con.cursor()
+        cur.execute(sql)
+        data = cur.fetchall()
+        DbManager.con.commit()
+        if data == None:
+            return []
+        result = []
+        for i in data:
+            result.append(i)
+        return result
+        
+        v=self.getBookInfo(2, key, False)
+        return v
+    
+    def getAllSupplierInfo(self):
+        sql="SELECT * FROM supplier WHERE state=0";
+        try:
+            cur=DbManager.con.cursor()
+            cur.execute(sql)
+            data = cur.fetchall()
+            DbManager.con.commit()
+            if data == None:
+                return []
+            result = []
+            for i in data:
+                result.append(i[0])
+                DbManager.con.commit()
+                
+        except mdb.Error as e:
+            print("Error %d: %s" % (e.args[0],e.args[1]))
+            #sys.exit(1)
+        return result
+    
 class BookManager:
+    
+    def delBook(self,bookId):
+        sql = "UPDATE book SET state=1 WHERE bookIdentifier='%s'" % bookId ;
+        cur = DbManager.con.cursor()
+        cur.execute(sql)
+        DbManager.con.commit()
+        return True
+        
+    
     def addBook(self,bookIden, supplierIden,
             bookName, bookType, year, author, retailPrice, rentPrice, originalPrice, amount):
-        sql = "INSERT INTO book  VALUES(\'%s\',\'%s\',\'%s\',\'%s\',\'%s\',\'%s\',%s,%s,%s,%s,%s,%s,%s)" % (bookIden,supplierIden,bookName,bookType,
+        sql = "INSERT INTO book  VALUES('%s','%s','%s','%s','%s','%s',%s,%s,%s,%s,%s)" % (bookIden,supplierIden,bookName,bookType,
                                                                                                      year,author,retailPrice,rentPrice,
                                                                                                  originalPrice,amount,0);
+        print(sql)
         try:
             cur=DbManager.con.cursor()
             
             cur.execute(sql)
             DbManager.con.commit()
             print("addBook Successful!")
+            return True
         except mdb.Error as e:
             print("Error %d: %s" % (e.args[0],e.args[1]))
             #sys.exit(1)
+            return False
 
     
     def getBookInfo(self,method,key,searchType):
@@ -49,7 +137,7 @@ class BookManager:
         data = cur.fetchall()
         DbManager.con.commit()
         if data == None:
-            return
+            return []
         result = []
         for i in data:
             result.append(i)
@@ -101,13 +189,20 @@ class DbManager:
     con = None
     um = UserManager() 
     bm = BookManager()
+    sm = SupplierManager()
+    cm = CusManager()
     @staticmethod
     def getUserManager():
         return DbManager.um
     @staticmethod
     def getBookManager():
         return DbManager.bm
-    
+    @staticmethod
+    def getSupplierManager():
+        return DbManager.sm
+    @staticmethod
+    def getCusManager():
+        return DbManager.cm
     def __init__(self):
         self.connect()
     def connect(self):

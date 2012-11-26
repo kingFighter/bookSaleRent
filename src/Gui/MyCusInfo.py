@@ -5,20 +5,20 @@ Created on 2012-11-25
 '''
 import sys
 from PyQt4 import QtCore, QtGui
-from BookInfo import Ui_Form
-from Gui.MyAABook import MyAABook
+from CusInfo import Ui_Form
+from Gui.MyAACus import MyAACus
 from dbOperate.DbManager import DbManager
 
-class MyBookInfo(QtGui.QMainWindow):
+class MyCusInfo(QtGui.QMainWindow):
     DB=None
     def __init__(self, db,parent=None):
-        MyBookInfo.DB=db
+        MyCusInfo.DB=db
         QtGui.QWidget.__init__(self,parent)
         self.ui = Ui_Form()
         self.ui.setupUi(self)
-        QtCore.QObject.connect(self.ui.pushButton_4,QtCore.SIGNAL("clicked()"),self.vagueBookSearch)
-        QtCore.QObject.connect(self.ui.pushButton ,QtCore.SIGNAL("clicked()"),self.addBook)
-        QtCore.QObject.connect(self.ui.pushButton_2 ,QtCore.SIGNAL("clicked()"),self.delBook)
+        QtCore.QObject.connect(self.ui.pushButton_4,QtCore.SIGNAL("clicked()"),self.vagueCusSearch)
+        QtCore.QObject.connect(self.ui.pushButton ,QtCore.SIGNAL("clicked()"),self.addCus)
+        QtCore.QObject.connect(self.ui.pushButton_2 ,QtCore.SIGNAL("clicked()"),self.delCus)
     
     def getSelect(self):
         row = self.ui.tableWidget.currentRow()
@@ -30,32 +30,32 @@ class MyBookInfo(QtGui.QMainWindow):
         result.append(item.text())
         return result
     
-    def delBook(self):
+    def delCus(self):
         v = self.getSelect()
-        MyBookInfo.DB.getBookManager().delBook(v[0])
+        MyCusInfo.DB.getCusManager().delCus(v[0])
         message = QtGui.QMessageBox(self)
         if len(v)==0:
-            message.setText("del A Book Unsuccessfully!")
+            message.setText("del A cus Unsuccessfully!")
             message.exec_()
         else:
-            message.setText("del A Book Successfully!")
+            message.setText("del A cus Successfully!")
             message.exec_()
             
-    def addBook(self):
+    def addCus(self):
         row=[]
-        MyAABook(MyBookInfo.DB,self,row).show()
+        MyAACus(MyCusInfo.DB,self,row).show()
         '''
         improve to show the added book right now
         '''
     
-    def vagueBookSearch(self):
+    def vagueCusSearch(self):
         key = self.ui.lineEdit.text()
-        v = MyBookInfo.DB.getBookManager().vagueBookSearch(key)
+        v = MyCusInfo.DB.getCusManager().vagueCusSearch(key)
         rowCount=len(v)
         self.ui.tableWidget.setRowCount(rowCount)
         p = 0
         for i in v:
-            for j in range(10):
+            for j in range(7):
                 item = QtGui.QTableWidgetItem()
                 self.ui.tableWidget.setItem(p, j, item)
                 item = self.ui.tableWidget.item(p, j)
@@ -67,6 +67,6 @@ class MyBookInfo(QtGui.QMainWindow):
 if __name__=="__main__":
     DB= DbManager()
     app = QtGui.QApplication(sys.argv)
-    myapp=MyBookInfo(DB)
+    myapp=MyCusInfo(DB)
     myapp.show()
     sys.exit(app.exec_())
