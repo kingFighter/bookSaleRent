@@ -4,7 +4,11 @@
 import MySQLdb as mdb
 import sys
 from dbHelp.StatusManager import StatusManager
-
+import time
+class BuyManager:
+    def addBuy(self,cusId,bookId,buyTime,amount):
+        pass
+    
 
 class   CusManager:
     def delCus(self,cusId):
@@ -27,9 +31,10 @@ class   CusManager:
             print("addCus Successful!")
             return True
         except mdb.Error as e:
+            return False
             print("Error %d: %s" % (e.args[0],e.args[1]))
             #sys.exit(1)
-            return False
+            
         
     def vagueCusSearch(self,key):
         sql = "SELECT * FROM customer WHERE cusName LIKE '%"+key+"%'"+" AND state=0";
@@ -45,6 +50,32 @@ class   CusManager:
         return result
 
 class SupplierManager:
+    
+    def delSupplier(self,bookId):
+        sql = "UPDATE supplier SET state=1 WHERE supplierIdentifier='%s'" % bookId ;
+        cur = DbManager.con.cursor()
+        cur.execute(sql)
+        DbManager.con.commit()
+        return True
+    
+    def addSupplier(self,iden,name,phone,email):
+        sql = "INSERT INTO supplier  VALUES('%s','%s','%s','%s',0)" % (iden,name,phone,email)
+                                                                    
+        print(sql)
+        try:
+            cur=DbManager.con.cursor()
+            cur.execute(sql)
+            DbManager.con.commit()
+            print("addSupplier Successful!")
+            return True
+        except mdb.Error as e:
+            return False
+            print("Error %d: %s" % (e.args[0],e.args[1]))
+            
+            #sys.exit(1)
+            
+
+    
     def vagueSupplierSearch(self,key):
         
         sql = "SELECT * FROM supplier WHERE supplierName LIKE '%"+key+"%'"+" AND state=0";
@@ -83,6 +114,15 @@ class SupplierManager:
     
 class BookManager:
     
+    def sell(self,id,sAmount,tAmount,cusId):
+        left = int(tAmount)-int(sAmount)
+        sql = "UPDATE book SET amount = %s" % left
+        cur = DbManager.con.cursor()
+        cur.execute(sql)
+        buyTime=(time.strftime('%Y%m%d%H%M%S ',time.localtime(time.time())))
+        DbManager.by.addBuy(cusId, id, buyTime, sAmount)
+        
+        
     def showStock(self):
         sql = "SELECT * FROM book WHERE amount<=5 AND state=0";
         cur = DbManager.con.cursor()
@@ -121,9 +161,10 @@ class BookManager:
             print("addBook Successful!")
             return True
         except mdb.Error as e:
+            return False
             print("Error %d: %s" % (e.args[0],e.args[1]))
             #sys.exit(1)
-            return False
+            
 
     
     def getBookInfo(self,method,key,searchType):
@@ -171,6 +212,60 @@ class BookManager:
         
         
 class UserManager:
+    
+    def addUser(self,userType,id,name,pwd):
+        if userType[0]=='s':
+            sId='SAIdentifier'
+        elif userType[0]=='a':
+            sId='adIdentifier'
+        else:
+            sId='operatorIdentifier'    
+        sql = "INSERT INTO "+userType+"  VALUES('%s','%s','%s',0)" % (id,name,pwd)
+                                                             
+        print(sql)
+        try:
+            cur=DbManager.con.cursor()
+            
+            cur.execute(sql)
+            DbManager.con.commit()
+            print("addUser Successful!")
+            return True
+        except mdb.Error as e:
+            return False
+            print("Error %d: %s" % (e.args[0],e.args[1]))
+    
+    
+    def delUser(self,type,iden):
+        if type[0] == 's':
+            idName = 'SAIdentifier'
+        elif type[0] == 'a':
+            idName = 'adIdentifier'
+        else:
+            idName = 'operatorIdentifier'
+        sql = "UPDATE "+type+" SET state=1 WHERE "+idName+"='%s'" % iden ;
+        cur = DbManager.con.cursor()
+        cur.execute(sql)
+        DbManager.con.commit()
+        return True
+    
+    def vagueUserSearch(self,key):
+        userType=['superadmin','administrator','operator']
+        result = []
+        for i in range(3):
+            sql = "SELECT * FROM "+userType[i]+" WHERE name LIKE '%"+key+"%'"+" AND state=0";
+            cur = DbManager.con.cursor()
+            cur.execute(sql)
+            data = cur.fetchall()
+            DbManager.con.commit()
+            if data == None:
+                continue
+            
+            for j in data:
+                j = (userType[i],)+j
+                result.append(j)
+        return result
+        
+    
     def checkUser(self,userType,name,pwd):
         sql = " SELECT * FROM " + userType + " WHERE name=\'%s\' AND pwd=\'%s\' AND state=0;" % (name,pwd)
        # print(sql)
@@ -207,6 +302,10 @@ class DbManager:
     bm = BookManager()
     sm = SupplierManager()
     cm = CusManager()
+    by = BuyManager()
+    @staticmethod
+    def getBuyManager():
+        return DbManager.by
     @staticmethod
     def getUserManager():
         return DbManager.um
