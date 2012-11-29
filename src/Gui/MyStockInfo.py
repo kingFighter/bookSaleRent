@@ -6,6 +6,7 @@ Created on 2012-11-25
 import sys
 from PyQt4 import QtCore, QtGui
 from StockInfo import Ui_Form
+from Gui.MyUStock import MyUStock
 from dbOperate.DbManager import DbManager
 
 class MyStockInfo(QtGui.QMainWindow):
@@ -17,7 +18,24 @@ class MyStockInfo(QtGui.QMainWindow):
         self.ui.setupUi(self)
         self.showStock()
         
-        self.ui.pushButton.close()
+        QtCore.QObject.connect(self.ui.pushButton,QtCore.SIGNAL("clicked()"),self.stock)
+    
+    def getSelect(self):
+        row = self.ui.tableWidget.currentRow()
+        result=[]
+        if row == -1:
+            return []
+        
+        for i in range(10):
+            item=self.ui.tableWidget.item(row, i)
+            result.append(item.text())
+        return result
+    
+    def stock(self):
+        row=self.getSelect()
+        print(row)
+        MyUStock(MyStockInfo.DB,self,row).show()
+        
         
     def showStock(self):
         v = MyStockInfo.DB.getBookManager().showStock()

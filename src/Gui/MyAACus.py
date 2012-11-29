@@ -22,7 +22,7 @@ class MyAACus(QtGui.QMainWindow):
         self.ui.lineEdit.setText("")
         self.ui.lineEdit_2.setText("")
         self.ui.lineEdit_5.setText("")
-        self.ui.lineEdit_3.setText("123")
+        self.ui.lineEdit_3.setText("")
         self.ui.lineEdit_7.setText("")
         
     def getCusInfo(self):
@@ -33,7 +33,7 @@ class MyAACus(QtGui.QMainWindow):
         cusType=self.ui.comboBox_2.currentIndex()
         phone=self.ui.lineEdit_5.text()
         email=self.ui.lineEdit_7.text()
-        return cusIden,'123',cusName,sex,phone,email,cusType
+        return cusIden,cusIden,cusName,sex,phone,email,cusType
 
     
     def addCus(self):

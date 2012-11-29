@@ -20,14 +20,18 @@ class   CusManager:
     
     def addCus(self,cusIden, vipIden,
             cusName, cusSex, phone, email, type):
-        sql = "INSERT INTO customer  VALUES('%s','%s','%s',%s,'%s','%s',%s,0)" % (cusIden,vipIden,cusName,cusSex,
+        sql = "INSERT INTO customer  VALUES('%s','%s','%s',%s,'%s','%s',%s,0)" % (cusIden,cusIden,cusName,cusSex,
                                                                                                      phone,email,type)
-                                                                                                 
+    
+        sql1= "INSERT INTO vipcard values('%s','2012-1-1','2020-1-1',0,0)" % cusIden
+                                                                                                         
         print(sql)
         try:
             cur=DbManager.con.cursor()
+            cur.execute(sql1)
             cur.execute(sql)
             DbManager.con.commit()
+            
             print("addCus Successful!")
             return True
         except mdb.Error as e:
@@ -113,6 +117,14 @@ class SupplierManager:
         return result
     
 class BookManager:
+    
+    def updateStock(self,id,amount):
+        sql = "UPDATE book SET amount = %s where  bookIdentifier='%s'" % (amount,id)
+        cur = DbManager.con.cursor()
+        print(sql)
+        cur.execute(sql)
+        
+        return True
     
     def sell(self,id,sAmount,tAmount,cusId):
         left = int(tAmount)-int(sAmount)
