@@ -13,6 +13,7 @@ from Gui.MyAABook import MyAABook
 from Gui.MyStockInfo import MyStockInfo
 from SMainWindow import Ui_MainWindow
 from dbOperate.DbManager import DbManager
+from Gui.MyEmail import MyEmail
 import time
 import os
 class MySMainW(QtGui.QMainWindow):
@@ -30,6 +31,7 @@ class MySMainW(QtGui.QMainWindow):
         QtCore.QObject.connect(self.ui.action_4,QtCore.SIGNAL("triggered()"),self.openCusInfo)
         QtCore.QObject.connect(self.ui.action_6,QtCore.SIGNAL("triggered()"),self.backup)
         QtCore.QObject.connect(self.ui.action_8,QtCore.SIGNAL("triggered()"),self.restore)
+        QtCore.QObject.connect(self.ui.action_10,QtCore.SIGNAL("triggered()"),self.openSendEmail)
         
         QtCore.QObject.connect(self.ui.action_7,QtCore.SIGNAL("triggered()"),self.openAboutInfo)
         QtCore.QObject.connect(self.ui.action,QtCore.SIGNAL("triggered()"),self.openUserInfo)
@@ -48,6 +50,9 @@ class MySMainW(QtGui.QMainWindow):
         message = QtGui.QMessageBox(self)
         message.setText("resotre successfully!")
         message.exec_()
+        
+    def openSendEmail(self):
+        MyEmail(self).show()
     
     def openAboutInfo(self):
         message = QtGui.QMessageBox(self)
